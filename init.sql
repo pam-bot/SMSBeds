@@ -13,9 +13,23 @@ CREATE TABLE IF NOT EXISTS `sms_input`.`beds_report` (
   `from_number` VARCHAR(255) NOT NULL,
   `from_body` VARCHAR(2048) NOT NULL,
   `hospital_id` INT UNSIGNED NOT NULL,
+  `authentic` TINYINT(1) NOT NULL,
+  `success` TINYINT(1) NOT NULL,
   `report_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS `sms_input`.`registered_staff` (
+  `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `from_number` VARCHAR(255) NOT NULL,
+  `hospital_id` INT UNSIGNED NOT NULL,
+  `last_modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `sms_input`.`unique_users` (
+  `from_number` VARCHAR(255) NOT NULL PRIMARY KEY,
+  `last_modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE DATABASE IF NOT EXISTS `sms_data`;
 USE `sms_data`;
@@ -40,21 +54,33 @@ CREATE TABLE IF NOT EXISTS `sms_data`.`outbreaks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-/* FAKE QUERY DATA */;
+/* FAKE DATA ENTRY PEOPLE */
+LOCK TABLES sms_input.registered_staff WRITE;
+INSERT INTO sms_input.registered_staff (name, from_number, hospital_id) 
+VALUES ('Pam', '+16463877470', 1234);
+UNLOCK TABLES;
+
+/* FAKE UNIQUE USERS */
+LOCK TABLES sms_input.unique_users WRITE;
+INSERT INTO sms_input.unique_users (from_number) 
+VALUES ('+16134738475');
+UNLOCK TABLES;
+
+/* FAKE QUERY DATA */
 LOCK TABLES sms_input.info_query WRITE;
 INSERT INTO sms_input.info_query (from_number, from_body) 
-VALUES ('16135555555', 'hello pam'),
-('16135555555', 'hello pam again');
+VALUES ('+16134738475', 'Mamou'),
+('+16134738475', 'Conakry');
 UNLOCK TABLES;
 
-/* FAKE HOSPITAL DATA */;
+/* FAKE HOSPITAL DATA */
 LOCK TABLES sms_data.hospital_beds WRITE;
 INSERT INTO sms_data.hospital_beds (hospital_id, hospital_name, location, country, beds) 
-VALUES (1111, 'Hospital1', 'Conakry', 'Guinea', 1),
-(2222, 'Hospital2', 'Mamou', 'Guinea', 3);
+VALUES (1234, 'Hospital1', 'Conakry', 'Guinea', 1),
+(5678, 'Hospital2', 'Mamou', 'Guinea', 3);
 UNLOCK TABLES;
 
-/* OUTDATED OUTBREAK DATA */;
+/* OUTDATED OUTBREAK DATA */
 LOCK TABLES sms_data.outbreaks WRITE;
 INSERT INTO sms_data.outbreaks (location, country, type, longitude, latitude, presence)
 VALUES ('Bamako','Mali','locality',-8.000000,12.650000,'N'),

@@ -13,7 +13,7 @@ def authenticate(from_number, from_body):
 	except ValueError:
 		sent_id = 0
 	db = MySQLdb.connect(host='localhost', user='root', passwd='mysqltesting', db='sms_input')
-	sql = "SELECT from_number,hospital_id FROM registered_users WHERE from_number = '"+from_number+"';"
+	sql = "SELECT from_number,hospital_id FROM registered_staff WHERE from_number = '"+from_number+"';"
 	with db:
 		cur = db.cursor()
 		cur.execute(sql)
@@ -64,19 +64,19 @@ def responseHandler(authentic, success):
 
 if __name__ == "__main__":
 	# should succeed
-	authentic, hospital_id = authenticate('16463877470', '1111 4')
-	success = insertBed('1111 4', hospital_id)
-	logUser('16463877470', '1111 4', hospital_id, authentic, success)
+	authentic, hospital_id = authenticate('+16463877470', '1234 4')
+	success = insertBed('1234 4', hospital_id)
+	logUser('+16463877470', '1234 4', hospital_id, authentic, success)
 	print responseHandler(authentic, success)
 	# should fail
-	authentic, hospital_id = authenticate('16465555555', '1111 4')
-	success = insertBed('1111 4', hospital_id)
-	logUser('16463877470', '1111 4', hospital_id, authentic, success)
+	authentic, hospital_id = authenticate('+16465555555', '1234 4')
+	success = insertBed('1234 4', hospital_id)
+	logUser('+16463877470', '1234 4', hospital_id, authentic, success)
 	print responseHandler(authentic, success)
 	# should fail
-	authentic, hospital_id = authenticate('16463877470', '1111 quatre')
-	success = insertBed('1111 quatre', hospital_id)
-	logUser('16463877470', '1111 quatre', hospital_id, authentic, success)
+	authentic, hospital_id = authenticate('+16463877470', '1234 quatre')
+	success = insertBed('1234 quatre', hospital_id)
+	logUser('+16463877470', '1234 quatre', hospital_id, authentic, success)
 	print responseHandler(authentic, success)
 
 
