@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import sys
 sys.path.insert(0, 'lib')
 sys.path.insert(1, '')
@@ -12,18 +13,20 @@ def authenticate(from_number, from_body):
 		sent_id = int(sent_id)
 	except ValueError:
 		sent_id = 0
-	db = MySQLdb.connect(host='localhost', user='root', passwd='mysqltesting', db='sms_input')
-	sql = "SELECT from_number,hospital_id FROM registered_staff WHERE from_number = '"+from_number+"';"
-	with db:
-		cur = db.cursor()
-		cur.execute(sql)
-		users = cur.fetchone()
-	if not users:
-		return False, sent_id
-	elif users[1] == sent_id:
-		return True, sent_id
-	else:
-		return False, 0
+	env = os.getenv('SERVER_SOFTWARE')
+	if (env and env.startswith('Google App Engine/')):
+		db = MySQLdb.connect(unix_socket='/cloudsql/smsante-query:smsantedb', user='root', db='sms_input')
+		sql = "SELECT from_number,hospital_id FROM registered_staff WHERE from_number = '"+from_number+"';"
+		with db:
+			cur = db.cursor()
+			cur.execute(sql)
+			users = cur.fetchone()
+		if not users:
+			return False, sent_id
+		elif users[1] == sent_id:
+			return True, sent_id
+		else:
+			return False, 0
 
 
 def insertBed(from_body, hospital_id):
@@ -36,20 +39,24 @@ def insertBed(from_body, hospital_id):
 		return False
 	if sent_id != hospital_id:
 		return False
-	db = MySQLdb.connect(host='localhost', user='root', passwd='mysqltesting', db='sms_data')
-	sql = "UPDATE hospital_beds SET beds = {0} WHERE hospital_id = {1} ;".format(numBeds, hospital_id)
-	with db:
-		cur = db.cursor()
-		cur.execute(sql)
+	env = os.getenv('SERVER_SOFTWARE')
+	if (env and env.startswith('Google App Engine/')):
+		db = MySQLdb.connect(unix_socket='/cloudsql/smsante-query:smsantedb', user='root', db='sms_data')
+		sql = "UPDATE hospital_beds SET beds = {0} WHERE hospital_id = {1} ;".format(numBeds, hospital_id)
+		with db:
+			cur = db.cursor()
+			cur.execute(sql)
 	return True
 
 
 def logUser(from_number, from_body, hospital_id, authentic, success):
-	db = MySQLdb.connect(host='localhost', user='root', passwd='mysqltesting', db='sms_input')
-	sql = "INSERT INTO beds_report (from_number,from_body,hospital_id,authentic,success) VALUES ('{0}','{1}', {2}, {3}, {4});".format(from_number, from_body, hospital_id, authentic, success)
-	with db:
-		cur = db.cursor()
-		cur.execute(sql)
+	env = os.getenv('SERVER_SOFTWARE')
+	if (env and env.startswith('Google App Engine/')):
+		db = MySQLdb.connect(unix_socket='/cloudsql/smsante-query:smsantedb', user='root', db='sms_input')
+		sql = "INSERT INTO beds_report (from_number,from_body,hospital_id,authentic,success) VALUES ('{0}','{1}', {2}, {3}, {4});".format(from_number, from_body, hospital_id, authentic, success)
+		with db:
+			cur = db.cursor()
+			cur.execute(sql)
 	return
 
 
