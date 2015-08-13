@@ -1,4 +1,4 @@
-SMSBeds
-=======
+# SMSante
+SMSante is an SMS app that allows users to text their town name to a number and receive back information concerning known Ebola outbreaks close to their location and the presence of hospital beds near them. It consists of two parts (spread in two repos), [SMSQuery](https://github.com/pamela-wu/SMSQuery) and [SMSBeds](https://github.com/pamela-wu/SMSBeds), because each one serves a different group of people and thus needs its own phone number. [SMSQuery](https://github.com/pamela-wu/SMSQuery) is geared towards regular citizens who want to inquire after information regarding outbreaks and beds, and [SMSBeds]() is for on-the-ground hospital and aid workers who want to use SMS text messages to update databases in real time.
 
-SMSBeds allows hospital workers to enter their hospital ID and the number of beds available and add it to the database to be retrieved by users of SMSante.
+Please check out the README of SMSQuery for full documentation on this app.

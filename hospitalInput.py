@@ -21,8 +21,9 @@ def SMSante():
 	authentic, success = False, False
 	if from_number and from_body:
 		authentic, hospital_id = authenticate(from_number, from_body)
+		authentic = True	# delete line to activate authentication
 		if authentic:
-			success = insertBed(from_body)
+			success = insertBed(from_body, hospital_id)
 			response = responseHandler(True, success)
 		else:
 			response = responseHandler(False, False)
@@ -30,7 +31,12 @@ def SMSante():
 		logUser(from_number, from_body, hospital_id, authentic, success)
 		return str(resp)
 	else:
-		return 'If you can read this, everything is working.'
+		#success = insertBed('1234 5', 1234)
+		success = True
+		if success:
+			return responseHandler(True, True)
+		else:
+			return responseHandler(False, False)
 
 
 if __name__ == "__main__":
